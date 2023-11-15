@@ -16,27 +16,35 @@ int **read_board_from_file(char *filename)
     
     if (fp == NULL){
         fprintf(stderr, "No file is found");
+        return 1;
     }
-    else {
+    
         int row = 0;
-
-        while (!feof(fp)) {
-
-            for (int i = 0; i < ROW_SIZE; i++){
-
-                fscanf(fp, "%d", &board[row][i]);
+        
+        for(int i = 0;i<ROW_SIZE;i++) {
+            for (int j = 0;j<COL_SIZE;j++) {
+                fscanf(fp,"%d",&board[i][j]);
             }
 
-            row++;
+        
         }
-        fclose(fp); 
-    }
+        fclose(fp);
+
+        
+    
 
     return board;
 }
 
 int main(int argc, char *argv[]){
-    read_board_from_file(argv[1]);
+    int** testBoard = read_board_from_file(argv[1]);
+    for(int i =0;i<ROW_SIZE;i++) {
+        for(int j=0;j<COL_SIZE;j++) {
+            printf("%d ",testBoard[i][j]);
+
+        }
+        printf("\n");
+    }
 }
 
 int is_board_valid()
