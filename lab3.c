@@ -23,35 +23,80 @@ int **read_board_from_file(char *filename)
         
         for(int i = 0;i<ROW_SIZE;i++) {
             for (int j = 0;j<COL_SIZE;j++) {
-                fscanf(fp,"%d",&board[i][j]);
+                fscanf(fp,"%d,",&board[i][j]);
             }
 
         
         }
         fclose(fp);
-
-        
-    
-
     return board;
 }
 
 int main(int argc, char *argv[]){
     int** testBoard = read_board_from_file(argv[1]);
-    for(int i =0;i<ROW_SIZE;i++) {
-        for(int j=0;j<COL_SIZE;j++) {
-            printf("%d ",testBoard[i][j]);
+    // for(int i =0;i<ROW_SIZE;i++) { 
+    //     for(int j=0;j<COL_SIZE;j++) {
+    //         printf("%d ",testBoard[i][j]);
 
-        }
-        printf("\n");
-    }
+    //     }
+    //     printf("\n");
+    // }
+    
+    is_row_valid(testBoard,1);
+    
 }
 
-int is_board_valid()
-{
-    pthread_t *tid; /* the thread identifiers */
+int is_board_valid() {
+    pthread_t *tid = (pthread_t*) malloc(sizeof(int)*NUM_OF_THREADS);
     pthread_attr_t attr;
-    param_struct *parameter;
+    param_struct* params = (param_struct*)malloc(sizeof(param_struct)*NUM_OF_THREADS);
+    for(int i= 0;i<ROW_SIZE;i++) {
+        params[i].starting_row = i;
+        params[i].starting_col = 0;
+        params[i].ending_row = i;
+        params[i].ending_col = COL_SIZE-1;
+        pthread_create(&(tid[i]), &attr, validate_row, &(params[i]));
 
-    // replace this comment with your code
+    }
+    
+
+    for(int i= ROW_SIZE;i<ROW_SIZE+COL_SIZE;i++) {
+        params[i].starting_row = 0;
+        params[i].starting_col = i;
+        params[i].ending_row = ROW_SIZE-1;
+        params[i].ending_col = i;
+        pthread_create(&(tid[i]), &attr, validate_col, &(params[i]));
+
+    }
+
+
+
+}
+
+int validate_row() {
+
+    return 1;
+}
+
+int validate_col() {
+    return 1;
+}
+
+int validate_subgrid() {
+    return 1;
+}
+
+
+
+
+
+
+int is_col_valid(int** col) {
+    int result_arr[COL_SIZE];
+    for(int i = 0;i<COL_SIZE;i++) {
+        printf("%d \n" , col[0][i]);
+    }
+    
+        
+    return 1;
 }
