@@ -55,31 +55,45 @@ int is_board_valid() {
         params[i].starting_col = 0;
         params[i].ending_row = i;
         params[i].ending_col = COL_SIZE-1;
-        pthread_create(&(tid[i]), &attr, validate_row, &(params[i]));
+        pthread_create(&(tid[i]), &attr, validate_row(sudoku_board,params[i]), &(params[i]));
 
     }
-    
+
 
     for(int i= ROW_SIZE;i<ROW_SIZE+COL_SIZE;i++) {
         params[i].starting_row = 0;
         params[i].starting_col = i;
         params[i].ending_row = ROW_SIZE-1;
         params[i].ending_col = i;
-        pthread_create(&(tid[i]), &attr, validate_col, &(params[i]));
-
+        pthread_create(&(tid[i]), &attr, validate_col(), &(params[i]));
     }
 
-
+    
 
 }
 
-int validate_row() {
+    
 
+
+ int validate_row(int** board, param_struct params) {
+    int validate_arr[9];
+    for(int i =params.starting_row; i<params.ending_row;i++) {
+        for (int j = params.starting_col;i<params.ending_row;i++) {
+            int current_row_val = board[i][j];
+            validate_arr[current_row_val-1] = current_row_val - (current_row_val-1);
+
+        }
+    }
+    for(int i = 0;i<9;i++) {
+        if(validate_arr[i]!=1) {
+            return 0;
+
+        }
+    }
     return 1;
-}
-
+ }
 int validate_col() {
-    return 1;
+    
 }
 
 int validate_subgrid() {
@@ -91,12 +105,4 @@ int validate_subgrid() {
 
 
 
-int is_col_valid(int** col) {
-    int result_arr[COL_SIZE];
-    for(int i = 0;i<COL_SIZE;i++) {
-        printf("%d \n" , col[0][i]);
-    }
-    
-        
-    return 1;
-}
+
