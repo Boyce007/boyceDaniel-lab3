@@ -32,21 +32,10 @@ int **read_board_from_file(char *filename)
     return board;
 }
 
-int main(int argc, char *argv[]){
-    int** testBoard = read_board_from_file(argv[1]);
-    // for(int i =0;i<ROW_SIZE;i++) { 
-    //     for(int j=0;j<COL_SIZE;j++) {
-    //         printf("%d ",testBoard[i][j]);
 
-    //     }
-    //     printf("\n");
-    // }
-    
-    is_row_valid(testBoard,1);
-    
-}
 
 int is_board_valid() {
+    worker_validation = (int*) malloc(sizeof(int)*NUM_OF_THREADS);
     pthread_t *tid = (pthread_t*) malloc(sizeof(int)*NUM_OF_THREADS);
     pthread_attr_t attr;
     param_struct* params = (param_struct*)malloc(sizeof(param_struct)*NUM_OF_THREADS);
@@ -67,6 +56,12 @@ int is_board_valid() {
         params[i].ending_col = i;
         pthread_create(&(tid[i]), &attr, validate_col(), &(params[i]));
     }
+    for(int i =0;i<NUM_OF_THREADS;i++) {
+        if (worker_validation[i]!=1) {
+            return 0;
+        }
+    }
+    return 1;
 
     
 
