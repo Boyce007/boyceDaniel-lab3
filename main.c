@@ -5,11 +5,13 @@
 int** sudoku_board;
 
 int main(int argc, char *argv[]){
+    printf("%s","main");
     
     if (argc < 2){
         fprintf(stderr,"SYNOPSIS: %s <file name>\n",argv[0]);
         return 1;
     }
+    
 
     sudoku_board = read_board_from_file(argv[1]);
     
