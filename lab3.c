@@ -45,7 +45,6 @@ void* validate(void* p) {
                 break;
             } else {
                 validate_arr[current_row_val-1] = 1;
-
             } 
         }
     }
@@ -64,13 +63,15 @@ int is_board_valid() {
     param_struct* params = (param_struct*)malloc(sizeof(param_struct)*NUM_OF_THREADS);
     worker_validation = (int*) malloc(sizeof(int)*NUM_OF_THREADS);
     int i =0;
+    pthread_attr_init(&attr);
+
     for(int row= 0;row<ROW_SIZE;row++) {
             params[i].id = i;
             params[i].starting_row = row;
             params[i].starting_col = 0;
             params[i].ending_row = row;
             params[i].ending_col = COL_SIZE-1;  
-            pthread_create(&(tid[i]), NULL, validate, &(params[i])); 
+            pthread_create(&(tid[i]), &attr, validate, &(params[i])); 
             i++;
     }
 
@@ -80,7 +81,7 @@ int is_board_valid() {
         params[i].starting_col = col;
         params[i].ending_row = ROW_SIZE-1;
         params[i].ending_col = col;
-        pthread_create(&(tid[i]), NULL, validate, &(params[i]));
+        pthread_create(&(tid[i]), &attr, validate, &(params[i]));
         i++;
     }
 
@@ -91,7 +92,7 @@ int is_board_valid() {
                 params[i].starting_col = col;
                 params[i].ending_row = row+2 ;
                 params[i].ending_col = col +2;
-                pthread_create(&(tid[i]), NULL, validate, &(params[i]));
+                pthread_create(&(tid[i]), &attr, validate, &(params[i]));
                 i++;
         }
         
