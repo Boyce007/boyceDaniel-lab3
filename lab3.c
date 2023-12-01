@@ -4,10 +4,11 @@
 #include "lab3.h"
 
 extern int **sudoku_board;
-// int** test_board;
+
 int *worker_validation;
 
-int **read_board_from_file(char *filename) {
+int **read_board_from_file(char *filename)
+{
     FILE *fp = fopen(filename, "r");
     sudoku_board = (int**)malloc(ROW_SIZE * sizeof(int*));
     for(int i= 0;i<ROW_SIZE;i++) {
@@ -24,6 +25,7 @@ int **read_board_from_file(char *filename) {
         }
     }
         fclose(fp);
+
     return sudoku_board;
 }
 
@@ -32,19 +34,21 @@ int **read_board_from_file(char *filename) {
 void* validate(void* p) {
     param_struct* param = (param_struct*) p;
     int validate_arr[9] = {0,0,0,0,0,0,0,0,0};
+    
+    worker_validation[param->id]  = 1;
     for(int i =param->starting_row ;i<=param->ending_row;i++) {
         for (int j = param->starting_col;j<= param->ending_col;j++) {          
             int current_row_val = sudoku_board[i][j];
             if(validate_arr[current_row_val-1]==1) { 
                 worker_validation[param->id] = 0; 
-                return NULL;
+                break;
             } else {
                 validate_arr[current_row_val-1] = 1;
+
             } 
         }
     }
-    
-    worker_validation[param->id] = 1;
+    printf("validation reult %d \n",worker_validation[param->id]);
     pthread_exit(0);
 }
 
@@ -54,22 +58,18 @@ void* validate(void* p) {
 
 
 int is_board_valid() {
-    pthread_t* tid = (pthread_t*) malloc(sizeof(int)*NUM_OF_THREADS);
+    pthread_t* tid = (pthread_t*) malloc(sizeof(int*)*NUM_OF_THREADS);
     pthread_attr_t attr;
     param_struct* params = (param_struct*)malloc(sizeof(param_struct)*NUM_OF_THREADS);
     worker_validation = (int*) malloc(sizeof(int)*NUM_OF_THREADS);
     int i =0;
-    pthread_attr_init(&attr);
-
     for(int row= 0;row<ROW_SIZE;row++) {
             params[i].id = i;
             params[i].starting_row = row;
             params[i].starting_col = 0;
             params[i].ending_row = row;
-            params[i].ending_col = COL_SIZE-1;           
-            
-            pthread_create(&(tid[i]), &attr, validate, &(params[i]));
-            
+            params[i].ending_col = COL_SIZE-1;  
+            pthread_create(&(tid[i]), NULL, validate, &(params[i])); 
             i++;
     }
 
@@ -79,7 +79,7 @@ int is_board_valid() {
         params[i].starting_col = col;
         params[i].ending_row = ROW_SIZE-1;
         params[i].ending_col = col;
-        pthread_create(&(tid[i]), &attr, validate, &(params[i]));
+        pthread_create(&(tid[i]), NULL, validate, &(params[i]));
         i++;
     }
 
@@ -90,7 +90,7 @@ int is_board_valid() {
                 params[i].starting_col = col;
                 params[i].ending_row = row+2 ;
                 params[i].ending_col = col +2;
-                pthread_create(&(tid[i]), &attr, validate, &(params[i]));
+                pthread_create(&(tid[i]), NULL, validate, &(params[i]));
                 i++;
         }
         
@@ -101,13 +101,16 @@ int is_board_valid() {
         
     }
     for(int i =0;i<NUM_OF_THREADS;i++) {
-        
+        if (i<=4) {
+            printf("id:%d value:%d \n",i,worker_validation[i]);
+
+        }
         if(worker_validation[i]!=1) {
-            
             return 0;
         }
     }
     
+   
     return 1;
 }
 
