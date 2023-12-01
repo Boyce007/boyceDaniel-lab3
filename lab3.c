@@ -32,6 +32,7 @@ int **read_board_from_file(char *filename)
 
 
 void* validate(void* p) {
+
     param_struct* param = (param_struct*) p;
     int validate_arr[9] = {0,0,0,0,0,0,0,0,0};
     
@@ -48,7 +49,7 @@ void* validate(void* p) {
             } 
         }
     }
-    printf("validation reult %d \n",worker_validation[param->id]);
+    
     pthread_exit(0);
 }
 
@@ -101,10 +102,8 @@ int is_board_valid() {
         
     }
     for(int i =0;i<NUM_OF_THREADS;i++) {
-        if (i<=4) {
-            printf("id:%d value:%d \n",i,worker_validation[i]);
 
-        }
+        
         if(worker_validation[i]!=1) {
             return 0;
         }
